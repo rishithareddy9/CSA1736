@@ -1,0 +1,132 @@
+import heapq
+
+# Goal state
+GOAL_STATE = (1, 2, 3,
+              4, 5, 6,
+              7, 8, 0)  # 0 represents the blank space
+
+# Possible moves
+MOVES = {
+    'UP': -3,
+    'DOWN': 3,
+    'LEFT': -1,
+    'RIGHT': 1
+}
+
+def is_valid_move(pos, move):
+    """Check if the move is valid based on the blank position."""
+    if move == 'UP' and pos < 3:
+        return False
+    if move == 'DOWN' and pos > 5:
+        return False
+    if move == 'LEFT' and pos % 3 == 0:
+        return False
+    if move == 'RIGHT' and (pos + 1) % 3 == 0:
+        return False
+    return True
+
+
+def manhattan_distance(state):
+    """Calculate the Manhattan distance heuristic."""
+    distance = 0
+    for i, tile in enumerate(state):
+        if tile != 0:
+            goal_pos = GOAL_STATE.index(tile)
+            distance += abs(goal_pos // 3 - i // 3) + abs(goal_pos % 3 - i % 3)
+    return distance
+
+
+def get_neighbors(state):
+    """Generate all possible next states with corresponding moves."""
+    neighbors = []
+    blank_pos = state.index(0)
+
+    for move, delta in MOVES.items():
+        if is_valid_move(blank_pos, move):
+            new_pos = blank_pos + delta
+            new_state = list(state)
+            # Swap blank with target tile
+            new_state[blank_pos], new_state[new_pos] = new_state[new_pos], new_state[blank_pos]
+            neighbors.append((tuple(new_state), move))
+
+    return neighbors
+
+
+def a_star(start_state):
+    """A* search algorithm implementation."""
+    frontier = []
+    heapq.heappush(frontier, (manhattan_distance(start_state), 0, start_state, []))
+    explored = set()
+
+    while frontier:
+        estimated_cost, cost, current_state, path = heapq.heappop(frontier)
+
+        if current_state == GOAL_STATE:
+            return path
+
+        explored.add(current_state)
+
+        for neighbor, move in get_neighbors(current_state):
+            if neighbor not in explored:
+                new_cost = cost + 1
+                priority = new_cost + manhattan_distance(neighbor)
+                heapq.heappush(frontier, (priority, new_cost, neighbor, path + [(move, neighbor)]))
+
+    return None
+
+
+def print_state(state):
+    """Pretty print a puzzle state."""
+    for i in range(0, 9, 3):
+        print(state[i:i+3])
+    print()
+
+
+if __name__ == "__main__":
+    # Example start state
+    start_state = (1, 2, 3,
+                   4, 0, 6,
+                   7, 5, 8)
+
+    print("Initial State:")
+    print_state(start_state)
+
+    print("Solving the puzzle using A* search...\n")
+    solution = a_star(start_state)
+
+    if solution:
+        print(f"Puzzle solved in {len(solution)} moves!\n")
+        print("Steps:")
+        current_state = start_state
+        print_state(current_state)
+
+        for i, (move, state) in enumerate(solution, 1):
+            print(f"Move {i}: {move}")
+            print_state(state)
+    else:
+        print(" No solution found.")
+OUTPUT 
+Initial State:
+(1, 2, 3)
+(4, 0, 6)
+(7, 5, 8)
+
+Solving the puzzle using A* search...
+
+✅ Puzzle solved in 2 moves!
+
+Steps:
+(1, 2, 3)
+(4, 0, 6)
+(7, 5, 8)
+
+Move 1: DOWN
+(1, 2, 3)
+(4, 5, 6)
+(7, 0, 8)
+
+Move 2: RIGHT
+(1, 2, 3)
+(4, 5, 6)
+(7, 8, 0)
+
