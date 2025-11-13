@@ -1,0 +1,76 @@
+# 8-Queens Problem using Backtracking
+
+N = 8  # Number of queens
+
+def print_solution(board):
+    """Print the chessboard with queens placed."""
+    for row in board:
+        line = ""
+        for cell in row:
+            line += "Q " if cell else ". "
+        print(line)
+    print("\n")
+
+
+def is_safe(board, row, col):
+    """Check if a queen can be placed at board[row][col]."""
+
+    # Check this column on upper rows
+    for i in range(row):
+        if board[i][col]:
+            return False
+
+    # Check upper left diagonal
+    for i, j in zip(range(row - 1, -1, -1), range(col - 1, -1, -1)):
+        if board[i][j]:
+            return False
+
+    # Check upper right diagonal
+    for i, j in zip(range(row - 1, -1, -1), range(col + 1, N)):
+        if board[i][j]:
+            return False
+
+    return True
+
+
+def solve_queens(board, row):
+    """Use backtracking to place queens row by row."""
+    if row == N:
+        print("✅ One valid solution found:\n")
+        print_solution(board)
+        return True
+
+    res = False
+    for col in range(N):
+        if is_safe(board, row, col):
+            board[row][col] = True  # Place queen
+            res = solve_queens(board, row + 1) or res
+            board[row][col] = False  # Backtrack
+
+    return res
+
+
+def solve_8_queens():
+    """Main driver function."""
+    board = [[False] * N for _ in range(N)]
+    if not solve_queens(board, 0):
+        print("❌ No solution exists.")
+    else:
+        print("🎯 End of solutions.")
+
+
+if __name__ == "__main__":
+    solve_8_queens()
+OUTPUT 
+✅ One valid solution found:
+
+. Q . . . . . .
+. . . Q . . . .
+. . . . . . Q .
+Q . . . . . . .
+. . Q . . . . .
+. . . . . Q . .
+. . . . . . . Q
+. . Q . . . . .
+
+
