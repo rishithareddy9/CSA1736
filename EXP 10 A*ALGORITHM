@@ -1,0 +1,43 @@
+from queue import PriorityQueue
+
+def a_star(graph, heuristics, start, goal):
+    pq = PriorityQueue()
+    pq.put((0, start))
+
+    came_from = {}
+    cost_so_far = {start: 0}
+
+    while not pq.empty():
+        current_cost, current_node = pq.get()
+
+        if current_node == goal:
+            break
+
+        for neighbor, weight in graph[current_node].items():
+            new_cost = cost_so_far[current_node] + weight
+
+            if neighbor not in cost_so_far or new_cost < cost_so_far[neighbor]:
+                cost_so_far[neighbor] = new_cost
+                priority = new_cost + heuristics[neighbor]
+                pq.put((priority, neighbor))
+                came_from[neighbor] = current_node
+
+    # Reconstruct path
+    path = [goal]
+    while path[-1] != start:
+        path.append(came_from[path[-1]])
+    path.reverse()
+
+    return path, cost_so_far[goal]
+
+
+# Graph (Weighted)
+graph = {
+    'A': {'B': 1, 'C': 4},
+    'B': {'A': 1, 'D': 2, 'E': 5},
+    'C': {'A': 4, 'F': 3},
+    'D': {'B':
+
+OUTPUT
+Shortest Path using A*: A → B → D → G
+Total Cost: 4
