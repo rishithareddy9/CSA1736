@@ -1,0 +1,60 @@
+# Vacuum Cleaner Problem (Simple Reflex Agent)
+
+def vacuum_world(state):
+    # state = (vacuum_position, left_room, right_room)
+    # vacuum_position: 'L' or 'R'
+    # left_room, right_room: 'Clean' or 'Dirty'
+
+    position, left, right = state
+    steps = []
+
+    # Show initial state
+    steps.append(f"Initial State → Position: {position}, Left: {left}, Right: {right}")
+
+    # If vacuum is on left
+    if position == 'L':
+        if left == 'Dirty':
+            steps.append("Left room is dirty → Cleaning left room.")
+            left = 'Clean'
+        else:
+            steps.append("Left room is clean → Moving to right.")
+            position = 'R'
+
+        # After cleaning left, move right
+        if position == 'L':  
+            steps.append("Moving to right room.")
+            position = 'R'
+
+    # If vacuum is on right
+    if position == 'R':
+        if right == 'Dirty':
+            steps.append("Right room is dirty → Cleaning right room.")
+            right = 'Clean'
+        else:
+            steps.append("Right room is clean → Moving to left.")
+            position = 'L'
+
+        # After cleaning right, move left
+        if position == 'R':
+            steps.append("Moving to left room.")
+            position = 'L'
+
+    # Final State
+    final_state = (position, left, right)
+    steps.append(f"Final State → Position: {position}, Left: {left}, Right: {right}")
+
+    return steps
+
+# Example: Left is dirty, Right is clean, Vacuum starts on Left
+output = vacuum_world(('L', 'Dirty', 'Clean'))
+
+# Print output
+for line in output:
+    print(line)
+OUTPUT
+Initial State → Position: L, Left: Dirty, Right: Clean
+Left room is dirty → Cleaning left room.
+Moving to right room.
+Right room is clean → Moving to left.
+Moving to left room.
+Final State → Position: L, Left: Clean, Right: Clean
