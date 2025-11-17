@@ -1,0 +1,61 @@
+# Map Coloring using Backtracking Algorithm
+
+# Graph of connected regions
+graph = {
+    'A': ['B', 'C', 'D'],
+    'B': ['A', 'C'],
+    'C': ['A', 'B', 'D', 'E'],
+    'D': ['A', 'C', 'E'],
+    'E': ['C', 'D']
+}
+
+# Possible colors
+colors = ['Red', 'Green', 'Blue', 'Yellow']
+
+
+def is_safe(node, color, assignment):
+    """Check if assigning color to node is valid"""
+    for neighbor in graph[node]:
+        if neighbor in assignment and assignment[neighbor] == color:
+            return False
+    return True
+
+
+def color_map(node_index, nodes, assignment):
+    """Backtracking algorithm"""
+    if node_index == len(nodes):
+        return True  # All nodes colored
+
+    node = nodes[node_index]
+
+    for color in colors:
+        if is_safe(node, color, assignment):
+            assignment[node] = color
+
+            if color_map(node_index + 1, nodes, assignment):
+                return True
+
+            # Backtrack
+            del assignment[node]
+
+    return False
+
+
+# Run the algorithm
+nodes = list(graph.keys())
+assignment = {}
+
+if color_map(0, nodes, assignment):
+    print("Map Coloring Result:")
+    for region, color in assignment.items():
+        print(f"Region {region} → {color}")
+else:
+    print("No valid coloring possible.")
+
+OUTPUT 
+Map Coloring Result:
+Region A → Red
+Region B → Green
+Region C → Blue
+Region D → Green
+Region E → Red
