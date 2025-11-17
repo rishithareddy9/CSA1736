@@ -1,0 +1,59 @@
+from collections import deque
+
+def water_jug_bfs(jug1, jug2, target):
+    visited = set()
+    queue = deque()
+
+    # Start with empty jugs
+    queue.append((0, 0))
+    visited.add((0, 0))
+
+    print("Steps:\n")
+
+    while queue:
+        a, b = queue.popleft()
+        print(f"Jug1 = {a}, Jug2 = {b}")
+
+        # Possible operations
+        next_states = set()
+
+        # Fill jug1
+        next_states.add((jug1, b))
+        # Fill jug2
+        next_states.add((a, jug2))
+        # Empty jug1
+        next_states.add((0, b))
+        # Empty jug2
+        next_states.add((a, 0))
+        # Pour jug1 → jug2
+        pour = min(a, jug2 - b)Steps:
+
+Jug1 = 0, Jug2 = 0
+Jug1 = 4, Jug2 = 0
+Jug1 = 0, Jug2 = 0
+Jug1 = 0, Jug2 = 3
+Jug1 = 4, Jug2 = 3
+Jug1 = 1, Jug2 = 3
+Jug1 = 1, Jug2 = 0
+Jug1 = 0, Jug2 = 1
+Jug1 = 4, Jug2 = 1
+Jug1 = 2, Jug2 = 3
+
+
+Final State: (2, 3)
+
+        next_states.add((a - pour, b + pour))
+        # Pour jug2 → jug1
+        pour = min(b, jug1 - a)
+        next_states.add((a + pour, b - pour))
+
+        # Process generated states
+        for state in next_states:
+            if state not in visited:
+                visited.add(state)
+                queue.append(state)
+
+# Example usage
+final_state = water_jug_bfs(4, 3, 2)
+print("\nFinal State:", final_state)
+OUTPUT
