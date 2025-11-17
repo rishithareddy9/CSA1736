@@ -1,0 +1,75 @@
+from collections import deque
+
+# Check if a state is valid
+def is_valid(m_left, c_left, m_right, c_right):
+    # No negative values
+    if m_left < 0 or c_left < 0 or m_right < 0 or c_right < 0:
+        return False
+    # Missionaries eaten on left side
+    if m_left > 0 and c_left > m_left:
+        return False
+    # Missionaries eaten on right side
+    if m_right > 0 and c_right > m_right:
+        return False
+    return True
+
+# BFS solver
+def missionaries_cannibals():
+    start = (3, 3, 0, 0, 1)  # (M_left, C_left, M_right, C_right, boat_side)
+    goal =  (0, 0, 3, 3, 0)
+
+    queue = deque()
+    queue.append((start, []))
+    visited = set()
+    visited.add(start)
+
+    moves = [
+        (1, 0),  # One missionary
+        (2, 0),  # Two missionaries
+        (0, 1),  # One cannibal
+        (0, 2),  # Two cannibals
+        (1, 1)   # One missionary, one cannibal
+    ]
+
+    while queue:
+        state, path = queue.popleft()
+        m_left, c_left, m_right, c_right, boat = state
+
+        if state == goal:
+            return path + [state]
+
+        for m, c in moves:
+            if boat == 1:  # boat on left → move to right
+                new_state = (m_left - m, c_left - c, m_right + m, c_right + c, 0)
+            else:  # boat on right → move to left
+                new_state = (m_left + m, c_left + c, m_right - m, c_right - c, 1)
+
+            if is_valid(*new_state[:4]) and new_state not in visited:
+                visited.add(new_state)
+                queue.append((new_state, path + [state]))
+
+    return None
+
+# Run the solver
+solution = missionaries_cannibals()
+
+# Print solution
+print("Missionaries & Cannibals Solution:\n")
+step_number = 0
+for step in solution:
+    print(f"Step {step_number}:  M_left={step[0]}, C_left={step[1]},  M_right={step[2]}, C_right={step[3]}, Boat={'Left' if step[4]==1 else 'Right'}")
+    step_number += 1
+OUTPUT
+Missionaries & Cannibals Solution:
+
+Step 0:  M_left=3, C_left=3,  M_right=0, C_right=0, Boat=Left
+Step 1:  M_left=3, C_left=1,  M_right=0, C_right=2, Boat=Right
+Step 2:  M_left=3, C_left=2,  M_right=0, C_right=1, Boat=Left
+Step 3:  M_left=3, C_left=0,  M_right=0, C_right=3, Boat=Right
+Step 4:  M_left=3, C_left=1,  M_right=0, C_right=2, Boat=Left
+Step 5:  M_left=1, C_left=1,  M_right=2, C_right=2, Boat=Right
+Step 6:  M_left=2, C_left=2,  M_right=1, C_right=1, Boat=Left
+Step 7:  M_left=0, C_left=2,  M_right=3, C_right=1, Boat=Right
+Step 8:  M_left=0, C_left=3,  M_right=3, C_right=0, Boat=Left
+Step 9:  M_left=0, C_left=1,  M_right=3, C_right=2, Boat=Right
+Step 10: M_left=0, C_left=0,  M_right=3, C_right=3, Boat=Left
